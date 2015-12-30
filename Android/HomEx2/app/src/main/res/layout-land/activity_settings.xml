@@ -1,3 +1,4 @@
+<!-- Splitting the screen vertically, on top side the level and complexity number pickers and on the bottom side the 'ok' saving changes button -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -5,19 +6,21 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.kepitapp.homex2.SettingsActivity"
-    android:background="#ff0f9ef9"
+    android:background="#ff3dcfd2"
     android:id="@+id/settingsMainLayout"
     android:orientation="vertical">
 
+    <!-- Split the top screen to 4 columns, 2 for labels & 2 for number pickers -->
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="5"
+        android:layout_weight="8"
         android:columnCount="4"
         android:rowCount="1"
         android:layout_marginLeft="75dp"
         android:layout_marginTop="40dp">
 
+        <!-- Level label -->
         <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,6 +29,7 @@
         android:textStyle="bold|italic"
         android:id="@+id/lblLevel"/>
 
+        <!-- Level number picker -->
         <NumberPicker
             android:layout_width="wrap_content"
             android:layout_height="87dp"
@@ -34,6 +38,7 @@
 
         </NumberPicker>
 
+        <!-- Complexity label -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -43,6 +48,7 @@
             android:id="@+id/lblComplexity"
             android:layout_marginLeft="50dp"/>
 
+        <!-- Complexity number picker -->
         <NumberPicker
             android:layout_width="wrap_content"
             android:layout_height="81dp"
@@ -53,12 +59,14 @@
         </NumberPicker>
         </GridLayout>
 
+    <!-- save changes button -->
     <Button
         android:layout_width="100dp"
         android:layout_height="60dp"
-        android:text="OK"
+        android:text="Save Changes"
         android:layout_gravity="right"
         android:layout_weight="1"
-        android:id="@+id/btnOK"/>
+        android:id="@+id/btnOK"
+        android:background="@drawable/btn_default"/>
 
 </LinearLayout>

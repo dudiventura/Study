@@ -1,26 +1,32 @@
+<!-- Split the screen horizontally, left side - playing side, right side - timers, settings and start button -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
-    android:background="#ff0f9ef9"
+    android:background="#ff3dcfd2"
     android:orientation="horizontal"
     android:id="@+id/mainLayout">
 
+    <!-- Left side - Using custom view -->
     <com.kepitapp.homex2.ShapesZone
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="1"/>
+        android:layout_weight="3"
+        android:background="#fff9edf7"
+        android:id="@+id/shapeZoneView" />
 
+    <!-- Right side - splitting the screen vertically   -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_weight="1"
+        android:layout_weight="2"
         android:layout_gravity="center_horizontal">
 
+        <!-- Split the top cell to grid 2X2, left cells for labels and right cells for time printing -->
         <GridLayout
             android:layout_width="wrap_content"
             android:layout_height="0dp"
@@ -30,7 +36,7 @@
             android:layout_marginTop="20dp"
             android:layout_weight="1">
 
-
+            <!-- "Best Result" label -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -38,30 +44,42 @@
                 android:id="@+id/lblBestScore"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_marginBottom="15dp"
-                android:textStyle="bold|italic" />
+                android:textStyle="bold|italic"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="center_horizontal"/>
+
+            <!-- Best score time label -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="waiting for score"
                 android:id="@+id/lblBestScoreValue"
                 android:layout_marginLeft="10dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_gravity="center_horizontal"/>
+
+            <!-- "Recent Result" & "Current time" label -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Recent Score:"
                 android:id="@+id/lblCurRecentScore"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textStyle="bold|italic" />
+                android:textStyle="bold|italic"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="center_horizontal"/>
+
+            <!-- Recent score time and current time label -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="00.000"
                 android:id="@+id/lblCurRecentScoreValue"
                 android:layout_marginLeft="10dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_gravity="center_horizontal"/>
         </GridLayout>
 
+        <!-- Start button -->
         <Button
             android:layout_width="wrap_content"
             android:layout_height="0dp"
@@ -69,8 +87,10 @@
             android:layout_gravity="center_horizontal"
             android:text="Settings"
             android:id="@+id/btnSettings"
-            android:layout_marginTop="35dp" />
+            android:layout_marginTop="35dp"
+            android:background="@drawable/btn_default"/>
 
+        <!-- Setting button -->
         <Button
             android:layout_width="wrap_content"
             android:layout_height="0dp"
@@ -78,7 +98,8 @@
             android:layout_gravity="center_horizontal"
             android:text="Start"
             android:id="@+id/btnStart"
-            android:layout_marginTop="5dp" />
+            android:layout_marginTop="5dp"
+            android:background="@drawable/btn_default"/>
 
     </LinearLayout>
 

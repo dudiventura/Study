@@ -8,8 +8,8 @@ import android.provider.BaseColumns;
 public class GameContract {
     public GameContract(){}
 
-    public static abstract class GameConfiguration implements BaseColumns{
-        public static final String TABLE_NAME = "configuration";
+    public static abstract class GameScores implements BaseColumns{
+        public static final String TABLE_NAME = "Scores";
         public static final String LEVEL = "level";
         public static final String COMPLEXITY = "complexity";
         public static final String BEST_RESULT = "best_result";

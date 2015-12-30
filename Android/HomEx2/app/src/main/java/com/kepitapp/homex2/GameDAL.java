@@ -7,93 +7,136 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 /**
- * Created by Dudi on 15/12/2015.
+ * Created by Dudi and Tzuria on 15/12/2015.
  */
 public class GameDAL {
 
     private DBHelper game_DB_Helper;
-    private final int DEFAULT_LEVEL = 1;
-    private final int DEFAULT_COMPLEXITY = 0;
 
     public GameDAL(Context context){
         game_DB_Helper = new DBHelper(context);
     }
-    public void initializeDefaultValues()
+
+    public long updateBestResult(int level, int complexity, int bestResult)
     {
-        //get DB
-        SQLiteDatabase db = game_DB_Helper.getReadableDatabase();
+        if(this.getBestResult(level,complexity) != 0 && this.getBestResult(level,complexity) < bestResult)
+            return 0;
+        // Get DB
+        SQLiteDatabase db = game_DB_Helper.getWritableDatabase();
 
-        Cursor c = db.rawQuery("SELECT * FROM " + GameContract.GameConfiguration.TABLE_NAME, null);
-        if(c != null) {
+        ContentValues values = new ContentValues();
+        values.put(GameContract.GameScores.BEST_RESULT,bestResult);
 
-            //values to save
-            ContentValues values = new ContentValues();
-            values.put(GameContract.GameConfiguration.LEVEL, DEFAULT_LEVEL);
-            values.put(GameContract.GameConfiguration.COMPLEXITY, DEFAULT_COMPLEXITY);
-
-            //save the values
-            db.insert(GameContract.GameConfiguration.TABLE_NAME, null, values);
+        String whereQuery = GameContract.GameScores.LEVEL + "=" + level + " AND " + GameContract.GameScores.COMPLEXITY + "=" + complexity;
+        int rows = db.update(GameContract.GameScores.TABLE_NAME,values,whereQuery,null);
+        if(rows < 1)
+        {
+            return insertBest(level,complexity,bestResult);
         }
+        db.close();
+        return rows;
     }
 
-    public int getComplexity()
+    private long insertBest(int level, int complexity, double bestResult)
+    {
+        SQLiteDatabase db = game_DB_Helper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(GameContract.GameScores.LEVEL,level);
+        values.put(GameContract.GameScores.COMPLEXITY,complexity);
+        values.put(GameContract.GameScores.BEST_RESULT,bestResult);
+        values.put(GameContract.GameScores.RECENT_RESULT,0);
+
+        long successfulInsert = db.insert(GameContract.GameScores.TABLE_NAME,null,values);
+        db.close();
+        return successfulInsert;
+    }
+
+    public int getBestResult(int level, int complexity)
+    {
+        // Get DB
+        SQLiteDatabase db = game_DB_Helper.getReadableDatabase();
+        String query = "SELECT " + GameContract.GameScores.BEST_RESULT + " FROM " + GameContract.GameScores.TABLE_NAME
+                + " WHERE " + GameContract.GameScores.LEVEL + "=" + level + " AND " + GameContract.GameScores.COMPLEXITY + "=" + complexity;
+        // Get the only line that the configuration table contain.
+        Cursor c = db.rawQuery(query, null);
+        if(c.getCount() == 0)
+            return 0;
+
+
+        while (c.moveToNext()) {
+            return c.getInt(c.getColumnIndex(GameContract.GameScores.BEST_RESULT));
+        }
+        db.close();
+        return 0;
+    }
+
+    public long updateRecentResult(int level, int complexity, double recentResult)
+    {
+        // Get DB
+        SQLiteDatabase db = game_DB_Helper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(GameContract.GameScores.RECENT_RESULT,recentResult);
+
+        String whereQuery = GameContract.GameScores.LEVEL + "=" + level + " AND " + GameContract.GameScores.COMPLEXITY + "=" + complexity;
+        int rows = db.update(GameContract.GameScores.TABLE_NAME,values,whereQuery,null);
+        if(rows < 1)
+        {
+            return insertRecent(level,complexity,recentResult);
+        }
+        db.close();
+        return rows;
+    }
+
+    private long insertRecent(int level, int complexity, double recentResult)
+    {
+        SQLiteDatabase db = game_DB_Helper.getReadableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(GameContract.GameScores.LEVEL,level);
+        values.put(GameContract.GameScores.COMPLEXITY,complexity);
+        values.put(GameContract.GameScores.RECENT_RESULT,recentResult);
+
+        return db.insert(GameContract.GameScores.TABLE_NAME,null,values);
+    }
+
+    public int getRecentResult(int level, int complexity)
     {
         // Get DB
         SQLiteDatabase db = game_DB_Helper.getReadableDatabase();
 
         // Get the only line that the configuration table contain.
-        Cursor c = db.rawQuery("SELECT * FROM " + GameContract.GameConfiguration.TABLE_NAME, null);
+        Cursor c = db.rawQuery("SELECT " + GameContract.GameScores.RECENT_RESULT + " FROM " + GameContract.GameScores.TABLE_NAME
+                + " WHERE " + GameContract.GameScores.LEVEL + "=" + level + " AND " + GameContract.GameScores.COMPLEXITY + "=" + complexity, null);
 
-        // Get the complexity index from the table.
-        int complexityIndex = c.getColumnIndex(GameContract.GameConfiguration.COMPLEXITY);
-
-        // Return the complexity value.
-        return c.getInt(complexityIndex);
-    }
-
-    public int getLevel()
-    {
-        // Get DB
-        SQLiteDatabase db = game_DB_Helper.getReadableDatabase();
-
-        // Get the only line that the configuration table contain.
-        Cursor c = db.rawQuery("SELECT * FROM " + GameContract.GameConfiguration.TABLE_NAME, null);
-
-        // Get the level index from the table.
-        int complexityIndex = c.getColumnIndex(GameContract.GameConfiguration.LEVEL);
-
-        // Return the level value.
-        return c.getInt(complexityIndex);
-    }
-
-    public int getBestResult()
-    {
-        // Get DB
-        SQLiteDatabase db = game_DB_Helper.getReadableDatabase();
-
-        // Get the only line that the configuration table contain.
-        Cursor c = db.rawQuery("SELECT * FROM " + GameContract.GameConfiguration.TABLE_NAME, null);
-
+        if(c.getCount() == 0)
+        {
+            return 0;
+        }
+        c.moveToNext();
         // Get the best result index from the table.
-        int complexityIndex = c.getColumnIndex(GameContract.GameConfiguration.BEST_RESULT);
+        int complexityIndex = c.getColumnIndex(GameContract.GameScores.RECENT_RESULT);
 
         // Return the best result value.
         return c.getInt(complexityIndex);
     }
 
-    public int getRecentResult()
+
+    public Cursor getAllScores()
     {
-        // Get DB
         SQLiteDatabase db = game_DB_Helper.getReadableDatabase();
-
+        String query = "SELECT * FROM " + GameContract.GameScores.TABLE_NAME;
         // Get the only line that the configuration table contain.
-        Cursor c = db.rawQuery("SELECT * FROM " + GameContract.GameConfiguration.TABLE_NAME, null);
+        Cursor c = db.rawQuery(query, null);
+        if(c != null)
+        {
+            while(c.moveToNext())
+            {
+                int level = c.getInt(c.getColumnIndex(GameContract.GameScores.LEVEL));
+            }
+        }
 
-        // Get the recent result index from the table.
-        int complexityIndex = c.getColumnIndex(GameContract.GameConfiguration.RECENT_RESULT);
-
-        // Return the recent result value.
-        return c.getInt(complexityIndex);
+        return c;
     }
-
 }
