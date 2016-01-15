@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Single weather information item for the list view, each item contains date, time, temperature, short description and icon -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="horizontal">
+    <LinearLayout
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:orientation="vertical">
+
+        <!-- Date - format dd/mm/yyyy will be designed in the code -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:id="@+id/txtDate"
+            android:layout_weight="1"
+            android:layout_gravity="top"
+            android:text="00/00/0000"/>
+
+        <!-- Time - format hh:mm will be designed in the code -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:id="@+id/txtTime"
+            android:layout_weight="1"
+            android:layout_gravity="bottom"
+            android:text="00:00"/>
+    </LinearLayout>
+
+    <!-- Temperature - in Celsius will be designed in the code -->
+    <TextView
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtTemperature"
+        android:layout_weight="1"
+        android:text="00C"/>
+
+    <!-- Short description -->
+    <TextView
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtDescription"
+        android:layout_weight="1"
+        android:text="weather description"/>
+
+    <!-- Icon -->
+    <ImageView
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/imgWeather"
+        android:layout_weight="1"/>
+</LinearLayout>

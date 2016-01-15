@@ -1,0 +1,26 @@
+<!-- The main screen of the application, divide by 2 vertically, top for the cities spinner and the rest of the screen for the information list -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:orientation="vertical"
+    android:background="#fff6f9dd"
+    android:layout_weight="3">
+
+    <!-- Application weather spinner on the top of the screen -->
+    <Spinner
+        android:layout_width="fill_parent"
+        android:layout_height="100px"
+        android:id="@+id/locationSpinner"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:spinnerMode="dropdown"
+        android:background="@drawable/spinner_background"/>
+
+    <!-- List of weather information under the spinner -->
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/weatherList"/>
+
+</LinearLayout>
