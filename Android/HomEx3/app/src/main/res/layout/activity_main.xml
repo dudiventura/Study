@@ -13,6 +13,7 @@
         android:layout_height="100px"
         android:id="@+id/locationSpinner"
         android:layout_alignParentTop="true"
+        android:popupBackground="#ff3399"
         android:layout_centerHorizontal="true"
         android:spinnerMode="dropdown"
         android:background="@drawable/spinner_background"/>
