@@ -3,6 +3,9 @@ package com.kepitapp.homex3;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.location.Location;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -20,6 +23,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationAvailability;
+import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,7 +37,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 
-public class MainActivity extends ActionBarActivity implements ListView.OnItemSelectedListener {
+public class MainActivity extends ActionBarActivity implements ListView.OnItemSelectedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private Spinner spinner; // App cities spinner
     private ListView weatherList; // App weather list view
@@ -39,12 +46,24 @@ public class MainActivity extends ActionBarActivity implements ListView.OnItemSe
     private HashMap<String,Integer> cityID; // Hash table, contain the cities possible names from the spinner and their ids from the website.
     private LinkedList<WeatherItem> weatherViewsList; // List of weather items for the adapter.
     private Context context;
+    private GoogleApiClient mGoogleApiClient;
+    private Location mLastLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Create an instance of GoogleAPIClient.
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+
+        this.onConnected(null);
 
         // Initialize
         this.weatherList = (ListView)findViewById(R.id.weatherList);
@@ -71,6 +90,7 @@ public class MainActivity extends ActionBarActivity implements ListView.OnItemSe
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
         spinner.setOnItemSelectedListener(this);
+
     }
 
 
@@ -100,8 +120,18 @@ public class MainActivity extends ActionBarActivity implements ListView.OnItemSe
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         weatherViewsList.removeAll(weatherViewsList);
         dialog.show();
-        // Get weather info consider on city id.
-        String url = "http://api.openweathermap.org/data/2.5/forecast?id="+ cityID.get(spinner.getSelectedItem().toString()) + "&units=metric&appid=2de143494c0b295cca9337e1e96b00e0";
+        String url = "";
+        if(spinner.getSelectedItem().equals("Current Location"))
+        {
+            onConnected(null);
+            if (mLastLocation != null) {
+                url = "http://api.openweathermap.org/data/2.5/forecast?lat=" + String.valueOf(mLastLocation.getLatitude()) + "&lon=" + String.valueOf(mLastLocation.getLongitude()) + "&units=metric&appid=2de143494c0b295cca9337e1e96b00e0";
+            }
+
+        }else {
+            // Get weather info consider on city id.
+            url = "http://api.openweathermap.org/data/2.5/forecast?id=" + cityID.get(spinner.getSelectedItem().toString()) + "&units=metric&appid=2de143494c0b295cca9337e1e96b00e0";
+        }
         JsonObjectRequest request =
                 new JsonObjectRequest(
                         Request.Method.GET,
@@ -190,7 +220,7 @@ public class MainActivity extends ActionBarActivity implements ListView.OnItemSe
     private ArrayList<String> addingCities()
     {
         ArrayList<String> cities = new ArrayList<String>();
-        //cities.add("Current Location");
+        cities.add("Current Location");
         cities.add("Jerusalem");
         cityID.put("Jerusalem",281184);
         cities.add("Haifa");
@@ -213,5 +243,36 @@ public class MainActivity extends ActionBarActivity implements ListView.OnItemSe
         cityID.put("Modiin",6693679);
 
         return cities;
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+ //       if(LocationServices.FusedLocationApi.getLocationAvailability(mGoogleApiClient).isLocationAvailable())
+             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    protected void onStart(){
+       mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop()
+    {
+        mGoogleApiClient.disconnect();
+        super.onStop();
     }
 }
